@@ -1,6 +1,7 @@
 package com.scaler.ProductService.controllers;
 
 import com.scaler.ProductService.ProductServiceApplication;
+import com.scaler.ProductService.models.Category;
 import com.scaler.ProductService.models.Product;
 import com.scaler.ProductService.services.ProductService;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,11 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @GetMapping("")
+    public List<Product> getAllProducts(){
+        return productService.getAllProducts();
+    }
+
     @GetMapping("/{id}")
     public Product getProductById(@PathVariable("id") Long id){
         return productService.getProductById(id);
@@ -27,9 +33,9 @@ public class ProductController {
         return productService.getProductsByCategory(category);
     }
 
-    @GetMapping("")
-    public List<Product> getAllProducts(){
-        return productService.getAllProducts();
+    @GetMapping("/categories")
+    public List<Category> getCategories(){
+        return productService.getCategories();
     }
 
     @PostMapping

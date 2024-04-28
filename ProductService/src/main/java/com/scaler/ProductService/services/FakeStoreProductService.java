@@ -1,16 +1,13 @@
 package com.scaler.ProductService.services;
 
+import com.scaler.ProductService.dtos.FakeStoreCategoryDto;
 import com.scaler.ProductService.dtos.FakeStoreProductDto;
-import com.scaler.ProductService.dtos.FakeStoreProductDtoList;
 import com.scaler.ProductService.models.Category;
 import com.scaler.ProductService.models.Product;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 @Service
 public class FakeStoreProductService implements ProductService{
@@ -18,6 +15,13 @@ public class FakeStoreProductService implements ProductService{
     private RestTemplate restTemplate;
     FakeStoreProductService(RestTemplate restTemplate){
         this.restTemplate = restTemplate;
+    }
+
+    @Override
+    public Product getProductById(Long id) {
+        FakeStoreProductDto fakeStoreProductDto = restTemplate.getForObject("https://fakestoreapi.com/products/"+id, FakeStoreProductDto.class);
+        assert fakeStoreProductDto != null;
+        return convertDtoToProduct(fakeStoreProductDto);
     }
 
     private Product convertDtoToProduct(FakeStoreProductDto fakeStoreProductDto){
@@ -33,29 +37,6 @@ public class FakeStoreProductService implements ProductService{
         return product;
     }
 
-    private List<Product> convertDtoListToProductList(FakeStoreProductDto[] fakeStoreProductDtoList){
-        List<Product> productList = new ArrayList<>();
-        for (FakeStoreProductDto fakeStoreProductDto : fakeStoreProductDtoList) {
-            productList.add(convertDtoToProduct(fakeStoreProductDto));
-        }
-        return productList;
-    }
-
-    private List<Product> convertDtoListToProductList(FakeStoreProductDtoList fakeStoreProductDtoList){
-        List<Product> productList = new ArrayList<>();
-        for (int i = 0; i < fakeStoreProductDtoList.size(); i++) {
-            productList.add(convertDtoToProduct(fakeStoreProductDtoList.get(i)));
-        }
-        return productList;
-    }
-
-    @Override
-    public Product getProductById(Long id) {
-        FakeStoreProductDto fakeStoreProductDto = restTemplate.getForObject("https://fakestoreapi.com/products/"+id, FakeStoreProductDto.class);
-        assert fakeStoreProductDto != null;
-        return convertDtoToProduct(fakeStoreProductDto);
-    }
-
     @Override
     public List<Product> getAllProducts() {
         FakeStoreProductDto[] fakeStoreProductDtos = restTemplate.getForObject("https://fakestoreapi.com/products", FakeStoreProductDto[].class);
@@ -63,6 +44,14 @@ public class FakeStoreProductService implements ProductService{
             return null;
         }
         return convertDtoListToProductList(fakeStoreProductDtos);
+    }
+
+    private List<Product> convertDtoListToProductList(FakeStoreProductDto[] fakeStoreProductDtoList){
+        List<Product> productList = new ArrayList<>();
+        for (FakeStoreProductDto fakeStoreProductDto : fakeStoreProductDtoList) {
+            productList.add(convertDtoToProduct(fakeStoreProductDto));
+        }
+        return productList;
     }
 
     @Override
@@ -76,7 +65,25 @@ public class FakeStoreProductService implements ProductService{
     }
 
     @Override
-    public Product updateProduct(Long id) {
+    public List<Category> getCategories() {
+        FakeStoreCategoryDto[] fakeStoreCategoryDtos = restTemplate.getForObject("https://fakestoreapi.com/products/categories", FakeStoreCategoryDto[].class);
+        assert fakeStoreCategoryDtos != null;
+        return convertDtoToCategoryList(fakeStoreCategoryDtos);
+    }
+
+    private List<Category> convertDtoToCategoryList(FakeStoreCategoryDto[] fakeStoreCategoryDtos) {
+        List<Category> categoryList = new ArrayList<>();
+        for (FakeStoreCategoryDto fakeStoreCategoryDto : fakeStoreCategoryDtos) {
+            Category category = new Category();
+            category.setTitle(fakeStoreCategoryDto.getTitle());
+            categoryList.add(category);
+        }
+        return categoryList;
+    }
+
+    @Override
+    public Product updateProduct(Long id, Product product) {
+        
         return null;
     }
 
